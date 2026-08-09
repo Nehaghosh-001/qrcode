@@ -25,12 +25,15 @@ SECRET_KEY = os.environ.get(
     'django-insecure-+v810a12y(43+9k54aiz4q#p)9-$0zmt*$)ny$o9xd-4h1v#s!'
 )
 
-DEBUG = os.environ.get('DEBUG', 'True').lower() in {'1', 'true', 'yes', 'on'}
+DEBUG = os.environ.get('DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
 
 default_hosts = '127.0.0.1,localhost,testserver'
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get('ALLOWED_HOSTS', default_hosts).split(',') if host.strip()]
+render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_host:
+    ALLOWED_HOSTS.append(render_host)
 
-CSRF_TRUSTED_ORIGINS = [
+csrf_origins = [
     origin.strip()
     for origin in os.environ.get(
         'CSRF_TRUSTED_ORIGINS',
@@ -38,6 +41,9 @@ CSRF_TRUSTED_ORIGINS = [
     ).split(',')
     if origin.strip()
 ]
+if render_host:
+    csrf_origins.append(f'https://{render_host}')
+CSRF_TRUSTED_ORIGINS = csrf_origins
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
