@@ -25,38 +25,16 @@ SECRET_KEY = os.environ.get(
     'django-insecure-+v810a12y(43+9k54aiz4q#p)9-$0zmt*$)ny$o9xd-4h1v#s!'
 )
 
-DEBUG = os.environ.get('DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
+DEBUG = True
 
-default_hosts = '127.0.0.1,localhost,testserver'
-ALLOWED_HOSTS = [host.strip() for host in os.environ.get('ALLOWED_HOSTS', default_hosts).split(',') if host.strip()]
-railway_host = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
-render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-for host in [railway_host, render_host]:
-    if host:
-        ALLOWED_HOSTS.append(host)
-
-csrf_origins = [
-    origin.strip()
-    for origin in os.environ.get(
-        'CSRF_TRUSTED_ORIGINS',
-        'http://localhost:8000,http://127.0.0.1:8000,http://0.0.0.0:8000'
-    ).split(',')
-    if origin.strip()
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'testserver']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://0.0.0.0:8000',
+    'http://localhost',
+    'http://127.0.0.1',
 ]
-for host in [railway_host, render_host]:
-    if host:
-        csrf_origins.append(f'https://{host}')
-        csrf_origins.append(f'http://{host}')
-CSRF_TRUSTED_ORIGINS = csrf_origins
-
-if not DEBUG:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 
 # Application definition
