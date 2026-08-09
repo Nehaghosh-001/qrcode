@@ -29,9 +29,11 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
 
 default_hosts = '127.0.0.1,localhost,testserver'
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get('ALLOWED_HOSTS', default_hosts).split(',') if host.strip()]
+railway_host = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
 render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if render_host:
-    ALLOWED_HOSTS.append(render_host)
+for host in [railway_host, render_host]:
+    if host:
+        ALLOWED_HOSTS.append(host)
 
 csrf_origins = [
     origin.strip()
@@ -41,8 +43,10 @@ csrf_origins = [
     ).split(',')
     if origin.strip()
 ]
-if render_host:
-    csrf_origins.append(f'https://{render_host}')
+for host in [railway_host, render_host]:
+    if host:
+        csrf_origins.append(f'https://{host}')
+        csrf_origins.append(f'http://{host}')
 CSRF_TRUSTED_ORIGINS = csrf_origins
 
 if not DEBUG:
